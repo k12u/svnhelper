@@ -1,0 +1,16 @@
+#!/usr/bin/perl
+
+use strict;
+#use warnings;
+
+use Getopt::Std;
+
+my $svn_info = `svn info|grep URL`;
+die "not http repository: $svn_info" unless $svn_info =~ /^URL: https?.+$/sm;
+die "trunk/branches directory not found in svn info: $svn_info" unless $svn_info =~ m#^URL: https?.+/(branches|tags|trunk)#sm;
+
+my ($root_path) = (($svn_info =~ m#^URL: (https?.+/)(branches|tags|trunk).*$#sm)[0]);
+my $sub_dir = (($ARGV[0] eq "-") ? "trunk" : ($ARGV[0] eq "-t") ? "tags/$ARGV[0]" : "branches/$ARGV[0]");
+my $cmd = sprintf("svn switch %s\n", ($root_path . $sub_dir));
+print $cmd;
+#print `$cmd`;
