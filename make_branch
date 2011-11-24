@@ -11,7 +11,10 @@ Getopt::Std::getopts('b:t:', \%opts);
 my $svn_info = `svn info|grep URL`;
 die "not http repository: $svn_info" unless $svn_info =~ /^URL: https?.+$/sm;
 die "trunk/branches directory not found in svn info: $svn_info" unless $svn_info =~ m#^URL: https?.+/(branches|tags|trunk)#sm;
+die "no dst option (-t: tag / -b: branch)" unless $opts{b} or $opts{t};
 
 my ($root_path) = (($svn_info =~ m#^URL: (https?.+/)(branches|tags|trunk).*$#sm)[0]);
-printf("svn copy %s %s\n", ($root_path . "trunk"), ($root_path . "branches/" . $opts{b})) if($opts{b});
-printf("svn copy %s %s\n", ($root_path . "trunk"), ($root_path . "tags/" . $opts{t})) if($opts{t});
+my $dst_path = ($opts{b}) ? ($root_path . "branches/" . $opts{b}) : ($root_path . "tags/" . $opts{t});
+my $message = 'new branch created.';
+
+printf("svn copy %s %s -m '%s'\n", ($root_path . "trunk"), $dst_path, $message);
