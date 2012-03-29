@@ -15,6 +15,6 @@ die "no dst option (-t: tag / -b: branch)" unless $opts{b} or $opts{t};
 
 my ($root_path) = (($svn_info =~ m#^URL: (https?.+/)(branches|tags|trunk).*$#sm)[0]);
 my $dst_path = ($opts{b}) ? ($root_path . "branches/" . $opts{b}) : ($root_path . "tags/" . $opts{t});
-my $message = 'new branch created.';
+my $message = '';
 
 printf("svn copy %s %s -m '%s'\n", ($root_path . "trunk"), $dst_path, $message);
